@@ -1,5 +1,8 @@
+use std::str::from_utf8;
+
 pub const HEADER_BYTES_SIZE: usize = 112;
 pub const DISK_HEADER_BYTES_SIZE: usize = 32;
+pub const VAR_HEADER_BYTES_SIZE: usize = 144;
 
 pub struct DiskHeader {
     pub start_date: f32,
@@ -21,6 +24,32 @@ pub struct Header {
     pub num_buf: i32,
     pub buf_len: i32,
     pub buf_offset: i32,
+}
+
+#[derive(Debug)]
+pub struct VarHeader {
+    pub r#type: i32,
+    pub offset: i32,
+    pub count: i32,
+    pub count_as_time: i8,
+    pub name: String,
+    pub description: String,
+    pub unit: String,
+}
+
+impl From<Vec<u8>> for VarHeader {
+    fn from(data: Vec<u8>) -> VarHeader {
+        VarHeader {
+            r#type: i32::from_le_bytes(data[0..4].try_into().unwrap()),
+            offset: i32::from_le_bytes(data[4..8].try_into().unwrap()),
+            count: i32::from_le_bytes(data[8..12].try_into().unwrap()),
+            count_as_time: i8::from_le_bytes(data[12..13].try_into().unwrap()),
+            // padding here, 16 byte align (3 bytes)
+            name: from_utf8(&data[16..48]).unwrap().to_string().replace("\0", ""),
+            description: from_utf8(&data[48..112]).unwrap().to_string().replace("\0", ""),
+            unit: from_utf8(&data[112..144]).unwrap().to_string().replace("\0", ""),
+        }
+    }
 }
 
 impl From<Vec<u8>> for DiskHeader {
