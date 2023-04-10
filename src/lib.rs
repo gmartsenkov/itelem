@@ -1,3 +1,4 @@
+mod headers;
 mod session_info;
 
 use std::{
@@ -6,64 +7,10 @@ use std::{
     usize,
 };
 
+use headers::{DiskHeader, Header, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE};
 use session_info::SessionInfo;
 
-const HEADER_BYTES_SIZE: usize = 112;
-const DISK_HEADER_BYTES_SIZE: usize = 32;
-
-pub struct DiskHeader {
-    pub start_date: f32,
-    pub start_time: f64,
-    pub end_time: f64,
-    pub lap_count: i32,
-    pub record_count: i32,
-}
-
-pub struct Header {
-    pub version: i32,
-    pub status: i32,
-    pub tick_rate: i32,
-    pub sesion_info_update: i32,
-    pub sesion_info_offset: i32,
-    pub sesion_info_length: i32,
-    pub num_vars: i32,
-    pub var_header_offset: i32,
-    pub num_buf: i32,
-    pub buf_len: i32,
-    pub buf_offset: i32,
-}
-
-impl From<Vec<u8>> for DiskHeader {
-    fn from(data: Vec<u8>) -> DiskHeader {
-        DiskHeader {
-            start_date: f32::from_le_bytes(data[0..4].try_into().unwrap()),
-            start_time: f64::from_le_bytes(data[8..16].try_into().unwrap()),
-            end_time: f64::from_le_bytes(data[16..24].try_into().unwrap()),
-            lap_count: i32::from_le_bytes(data[24..28].try_into().unwrap()),
-            record_count: i32::from_le_bytes(data[28..32].try_into().unwrap()),
-        }
-    }
-}
-
-impl From<Vec<u8>> for Header {
-    fn from(data: Vec<u8>) -> Header {
-        Header {
-            version: i32::from_le_bytes(data[0..4].try_into().unwrap()),
-            status: i32::from_le_bytes(data[4..8].try_into().unwrap()),
-            tick_rate: i32::from_le_bytes(data[8..12].try_into().unwrap()),
-            sesion_info_update: i32::from_le_bytes(data[12..16].try_into().unwrap()),
-            sesion_info_length: i32::from_le_bytes(data[16..20].try_into().unwrap()),
-            sesion_info_offset: i32::from_le_bytes(data[20..24].try_into().unwrap()),
-            num_vars: i32::from_le_bytes(data[24..28].try_into().unwrap()),
-            var_header_offset: i32::from_le_bytes(data[28..32].try_into().unwrap()),
-            num_buf: i32::from_le_bytes(data[32..36].try_into().unwrap()),
-            buf_len: i32::from_le_bytes(data[36..40].try_into().unwrap()),
-            buf_offset: i32::from_le_bytes(data[52..56].try_into().unwrap()),
-        }
-    }
-}
 pub struct IbtReader {
-    file: File,
     pub header: Header,
     pub disk_header: DiskHeader,
     pub session_info: SessionInfo,
@@ -85,7 +32,6 @@ impl IbtReader {
         );
         println!("{}", std::str::from_utf8(&session_info_data).unwrap());
         IbtReader {
-            file,
             header,
             disk_header,
             session_info: serde_yaml::from_str(std::str::from_utf8(&session_info_data).unwrap())
