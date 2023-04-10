@@ -1,3 +1,4 @@
+pub mod constants;
 mod events;
 mod headers;
 mod session_info;
@@ -85,6 +86,7 @@ fn read_bytes_file(file: &mut File, from: usize, size: usize) -> Result<Vec<u8>,
 
 #[cfg(test)]
 mod tests {
+    use crate::constants::Flags;
     use crate::events::{Event, EventValue};
 
     use super::*;
@@ -130,10 +132,19 @@ mod tests {
         assert_eq!(rpm.name, "RPM");
         let fps = &vars[20].clone();
         assert_eq!(fps.name, "FrameRate");
+        let flags = &vars[5].clone();
+        assert_eq!(flags.name, "SessionFlags");
+
+        vars.iter().enumerate().for_each(|(i, e)| {
+            println!("{}, {}", i, e.name.clone());
+        });
 
         let events: Vec<Event> = reader.events().collect();
         assert_eq!(events.len(), 3371);
         let first_event = events[1001].get_by_header(rpm).unwrap();
         assert_eq!(first_event, EventValue::Float32(991.8974));
+        let second_event = events[1001].get_by_header(flags).unwrap();
+        assert_eq!(second_event, EventValue::BitField(268698112));
+        assert_eq!(second_event.bitfield() & Flags::Checkered as u32, 0);
     }
 }

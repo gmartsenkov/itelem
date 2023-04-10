@@ -12,6 +12,56 @@ pub enum EventValue {
     Float64(f64),
 }
 
+impl EventValue {
+    pub fn char(&self) -> char {
+        if let EventValue::Char(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn bool(&self) -> bool {
+        if let EventValue::Bool(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn float_32(&self) -> f32 {
+        if let EventValue::Float32(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn float_64(&self) -> f64 {
+        if let EventValue::Float64(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn int(&self) -> i32 {
+        if let EventValue::Int(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+
+    pub fn bitfield(&self) -> u32 {
+        if let EventValue::BitField(x) = self {
+            x.clone()
+        } else {
+            panic!()
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Event {
     data: Vec<u8>,
