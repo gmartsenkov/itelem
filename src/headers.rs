@@ -26,7 +26,7 @@ pub struct Header {
     pub buf_offset: i32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VarHeader {
     pub r#type: i32,
     pub offset: i32,
