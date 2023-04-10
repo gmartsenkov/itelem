@@ -1,15 +1,17 @@
 use std::{fs::File, io::Read};
 
 pub struct Header {
-    pub version: u32,
-    pub tick_rate: u32
+    pub version: i32,
+    pub status: i32,
+    pub tick_rate: i32
 }
 
 impl From<Vec<u8>> for Header {
     fn from(data : Vec<u8>) -> Header {
         Header{
-            version: u32::from_le_bytes(data[0..4].try_into().unwrap()),
-            tick_rate: u32::from_le_bytes(data[8..12].try_into().unwrap()),
+            version: i32::from_le_bytes(data[0..4].try_into().unwrap()),
+            status: i32::from_le_bytes(data[4..8].try_into().unwrap()),
+            tick_rate: i32::from_le_bytes(data[8..12].try_into().unwrap()),
         }
     }
 
@@ -44,6 +46,7 @@ mod tests {
         let reader = IbtReader::new("./test/fixtures/amg.ibt");
         assert_eq!(reader.header.version, 2);
         assert_eq!(reader.header.tick_rate, 60);
+        assert_eq!(reader.header.status, 1);
     }
 
 }
