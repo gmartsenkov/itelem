@@ -64,6 +64,13 @@ impl IbtReader {
             file: &mut self.file,
         }
     }
+
+    pub fn find_var(&self, name: String) -> Option<VarHeader> {
+        (&self.vars)
+            .into_iter()
+            .find(|var| var.name == name)
+            .map(|x| x.clone())
+    }
 }
 
 fn get_var_header(file: &mut File, header: &Header) -> Vec<u8> {
@@ -125,14 +132,14 @@ mod tests {
         assert_eq!(first.name, "SessionTime");
         assert_eq!(first.description, "Seconds since session start");
         assert_eq!(first.unit, "s");
-        let second = &vars[1];
+        let second = reader.find_var("SessionTick".to_string()).unwrap();
         assert_eq!(second.name, "SessionTick");
         assert_eq!(second.offset, 8);
-        let rpm = &vars[55].clone();
+        let rpm = reader.find_var("RPM".to_string()).unwrap();
         assert_eq!(rpm.name, "RPM");
-        let fps = &vars[20].clone();
+        let fps = reader.find_var("FrameRate".to_string()).unwrap();
         assert_eq!(fps.name, "FrameRate");
-        let flags = &vars[5].clone();
+        let flags = reader.find_var("SessionFlags".to_string()).unwrap();
         assert_eq!(flags.name, "SessionFlags");
 
         vars.iter().enumerate().for_each(|(i, e)| {
@@ -141,9 +148,9 @@ mod tests {
 
         let events: Vec<Event> = reader.events().collect();
         assert_eq!(events.len(), 3371);
-        let first_event = events[1001].get_by_header(rpm).unwrap();
+        let first_event = events[1001].get_by_header(&rpm).unwrap();
         assert_eq!(first_event, EventValue::Float32(991.8974));
-        let second_event = events[1001].get_by_header(flags).unwrap();
+        let second_event = events[1001].get_by_header(&flags).unwrap();
         assert_eq!(second_event, EventValue::BitField(268698112));
         assert_eq!(second_event.bitfield() & Flags::Checkered as u32, 0);
     }
