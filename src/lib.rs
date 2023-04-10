@@ -44,7 +44,6 @@ impl IbtReader {
             })
             .collect();
 
-        println!("{:?}", vars[1]);
         IbtReader {
             header,
             vars,
