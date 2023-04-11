@@ -3,10 +3,7 @@ mod events;
 mod headers;
 mod session_info;
 
-use std::{
-    fs::File,
-    io::{Read, Seek, SeekFrom},
-};
+use std::io::{Read, Seek, SeekFrom};
 
 use events::Events;
 use headers::{DiskHeader, Header, VarHeader, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE};
@@ -14,8 +11,11 @@ use session_info::SessionInfo;
 
 use crate::headers::VAR_HEADER_BYTES_SIZE;
 
+pub trait ReadSeek: Read + Seek {}
+impl<T: Read + Seek> ReadSeek for T {}
+
 pub struct IbtReader {
-    file: File,
+    file: Box<dyn ReadSeek>,
     pub header: Header,
     pub disk_header: DiskHeader,
     pub vars: Vec<VarHeader>,
@@ -23,14 +23,13 @@ pub struct IbtReader {
 }
 
 impl IbtReader {
-    pub fn new(file_path: &str) -> IbtReader {
-        let mut file = File::open(file_path).expect("Could not load file");
-        let header = Header::from(read_bytes_file(&mut file, 0, HEADER_BYTES_SIZE).unwrap());
+    pub fn new(mut buffer: Box<dyn ReadSeek>) -> IbtReader {
+        let header = Header::from(read_bytes_file(&mut buffer, 0, HEADER_BYTES_SIZE).unwrap());
         let disk_header = DiskHeader::from(
-            read_bytes_file(&mut file, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE).unwrap(),
+            read_bytes_file(&mut buffer, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE).unwrap(),
         );
         let session_info_data = read_bytes_file(
-            &mut file,
+            &mut buffer,
             header.sesion_info_offset as usize,
             header.sesion_info_length as usize,
         )
@@ -38,7 +37,7 @@ impl IbtReader {
         let session_info =
             serde_yaml::from_str(std::str::from_utf8(&session_info_data).unwrap()).unwrap();
 
-        let vars_data = get_var_header(&mut file, &header);
+        let vars_data = get_var_header(&mut buffer, &header);
         let vars: Vec<VarHeader> = (0..header.num_vars)
             .map(|n| {
                 let start = n as usize * VAR_HEADER_BYTES_SIZE;
@@ -48,7 +47,7 @@ impl IbtReader {
             .collect();
 
         IbtReader {
-            file,
+            file: Box::new(buffer),
             header,
             vars,
             disk_header,
@@ -73,15 +72,12 @@ impl IbtReader {
     }
 }
 
-fn get_var_header(file: &mut File, header: &Header) -> Vec<u8> {
-    //    const numberOfVariables = telemetryHeader.numVars
-    //   const startPosition = telemetryHeader.varHeaderOffset
-    //    const fullBufferSize = numberOfVariables * VAR_HEADER_SIZE_IN_BYTES
+fn get_var_header(file: &mut dyn ReadSeek, header: &Header) -> Vec<u8> {
     let buffer_size = header.num_vars as usize * VAR_HEADER_BYTES_SIZE;
     read_bytes_file(file, header.var_header_offset as usize, buffer_size).unwrap()
 }
 
-fn read_bytes_file(file: &mut File, from: usize, size: usize) -> Result<Vec<u8>, ()> {
+fn read_bytes_file(file: &mut dyn ReadSeek, from: usize, size: usize) -> Result<Vec<u8>, ()> {
     let mut buffer: Vec<u8> = Vec::with_capacity(size);
     buffer.resize(size, 0);
     file.seek(SeekFrom::Start(from as u64)).unwrap();
@@ -95,12 +91,14 @@ fn read_bytes_file(file: &mut File, from: usize, size: usize) -> Result<Vec<u8>,
 mod tests {
     use crate::constants::Flags;
     use crate::events::{Event, EventValue};
+    use std::fs::File;
 
     use super::*;
 
     #[test]
     fn test_new() {
-        let mut reader = IbtReader::new("./test/fixtures/amg.ibt");
+        let file = File::open("./test/fixtures/amg.ibt").unwrap();
+        let mut reader = IbtReader::new(Box::new(file));
         assert_eq!(reader.header.version, 2);
         assert_eq!(reader.header.tick_rate, 60);
         assert_eq!(reader.header.status, 1);

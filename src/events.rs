@@ -1,6 +1,4 @@
-use std::fs::File;
-
-use crate::{headers::VarHeader, read_bytes_file};
+use crate::{headers::VarHeader, read_bytes_file, ReadSeek};
 
 #[derive(Debug, PartialEq)]
 pub enum EventValue {
@@ -68,8 +66,7 @@ pub struct Event {
 }
 
 pub struct Events<'a> {
-    // pub file: &'a File,
-    pub file: &'a mut File,
+    pub file: &'a mut dyn ReadSeek,
     pub length: i32,
     pub buf_offset: i32,
     pub current: i32,
