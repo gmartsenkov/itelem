@@ -1,12 +1,12 @@
 pub mod constants;
-mod samples;
 mod headers;
+mod samples;
 mod session_info;
 
 use std::io::{Read, Seek, SeekFrom};
 
-use samples::Samples;
 use headers::{DiskHeader, Header, VarHeader, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE};
+use samples::Samples;
 use session_info::SessionInfo;
 
 use crate::headers::VAR_HEADER_BYTES_SIZE;
