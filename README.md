@@ -3,6 +3,12 @@
 Provides parsing of iRacing's `.ibt` telemtry files. It's based on the excellent javascript library [ibt-telemetry](https://github.com/SkippyZA/ibt-telemetry).
 
 # Usage
+Add the following to your `Cargo.toml`:
+```toml
+[dependencies]
+telem = "0.1.0"
+```
+Pass in a file or anything that implements `Read + Seek` and you can access header information as well as `weeknd_info` and the samples that contain the most interesting information.
 ```rust
 let file = File::open("./sting.ibt").unwrap();
 let mut reader = IbtReader::new(Box::new(file));
