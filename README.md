@@ -6,7 +6,7 @@ Provides parsing of iRacing's `.ibt` telemtry files. It's based on the excellent
 Add the following to your `Cargo.toml`:
 ```toml
 [dependencies]
-telem = "0.1.0"
+telem = "0.1.1"
 ```
 Pass in a file or anything that implements `Read + Seek` and you can access header information as well as `weeknd_info` and the samples that contain the most interesting information.
 ```rust
@@ -25,5 +25,4 @@ let samples: Vec<Sample> = reader.samples().collect();
 assert_eq!(samples.len(), 3371);
 let first_sample = samples[1001].get_by_header(&rpm).unwrap();
 assert_eq!(first_sample, SampleValue::Float32(991.8974));
-
 ```
