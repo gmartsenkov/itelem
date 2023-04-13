@@ -100,4 +100,43 @@ pub struct WeekendOptions {
 #[serde(rename_all = "PascalCase")]
 pub struct SessionInfo {
     pub weekend_info: WeekendInfo,
+    pub session_info: Sessions,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Sessions {
+    pub sessions: Vec<Session>
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Session {
+    pub session_num: i32,
+    pub session_laps: String,
+    pub session_time: String,
+    pub session_num_laps_to_avg: i32,
+    pub session_type: String,
+    pub session_track_rubber_state: String,
+    pub session_name: String,
+    pub session_sub_type: Option<String>,
+    pub session_skipped: i32,
+    pub session_run_groups_used: i32,
+    pub session_enforce_tire_compound_change: i32,
+    pub results_fastest_lap: Vec<FastestLap>,
+    pub results_average_lap_time: f32,
+    pub results_num_caution_flags: i32,
+    pub results_num_caution_laps: i32,
+    pub results_num_lead_changes: i32,
+    pub results_laps_complete: i32,
+    pub results_official: i32
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct FastestLap {
+    #[serde(rename = "CarIdx")]
+    pub car_idx: i32,
+    pub fastes_lap: Option<i32>,
+    pub fastest_time: f32
 }

@@ -121,6 +121,13 @@ mod tests {
         assert_eq!(weekend_info.track_name, "spielberg gp");
         assert_eq!(weekend_info.weekend_options.qualify_scoring, "best lap");
 
+        let session_info = &reader.session_info.session_info;
+        assert_eq!(session_info.sessions.len(), 1);
+        let first_session = &session_info.sessions[0];
+        assert_eq!(first_session.session_type, "Offline Testing");
+        assert_eq!(first_session.results_fastest_lap.len(), 1);
+        assert_eq!(first_session.results_fastest_lap[0].car_idx, 255);
+
         let vars = &reader.vars;
         let first = &vars[0];
         assert_eq!(first.r#type, 5);
