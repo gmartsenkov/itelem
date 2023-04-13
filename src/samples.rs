@@ -1,7 +1,7 @@
 use crate::{headers::VarHeader, read_bytes_file, ReadSeek};
 
 #[derive(Debug, PartialEq)]
-pub enum EventValue {
+pub enum SampleValue {
     Char(char),
     Bool(bool),
     Int(i32),
@@ -10,9 +10,9 @@ pub enum EventValue {
     Float64(f64),
 }
 
-impl EventValue {
+impl SampleValue {
     pub fn char(&self) -> char {
-        if let EventValue::Char(x) = self {
+        if let SampleValue::Char(x) = self {
             x.clone()
         } else {
             panic!()
@@ -20,7 +20,7 @@ impl EventValue {
     }
 
     pub fn bool(&self) -> bool {
-        if let EventValue::Bool(x) = self {
+        if let SampleValue::Bool(x) = self {
             x.clone()
         } else {
             panic!()
@@ -28,7 +28,7 @@ impl EventValue {
     }
 
     pub fn float_32(&self) -> f32 {
-        if let EventValue::Float32(x) = self {
+        if let SampleValue::Float32(x) = self {
             x.clone()
         } else {
             panic!()
@@ -36,7 +36,7 @@ impl EventValue {
     }
 
     pub fn float_64(&self) -> f64 {
-        if let EventValue::Float64(x) = self {
+        if let SampleValue::Float64(x) = self {
             x.clone()
         } else {
             panic!()
@@ -44,7 +44,7 @@ impl EventValue {
     }
 
     pub fn int(&self) -> i32 {
-        if let EventValue::Int(x) = self {
+        if let SampleValue::Int(x) = self {
             x.clone()
         } else {
             panic!()
@@ -52,7 +52,7 @@ impl EventValue {
     }
 
     pub fn bitfield(&self) -> u32 {
-        if let EventValue::BitField(x) = self {
+        if let SampleValue::BitField(x) = self {
             x.clone()
         } else {
             panic!()
@@ -61,67 +61,67 @@ impl EventValue {
 }
 
 #[derive(Debug)]
-pub struct Event {
+pub struct Sample {
     data: Vec<u8>,
 }
 
-pub struct Events<'a> {
+pub struct Samples<'a> {
     pub file: &'a mut dyn ReadSeek,
     pub length: i32,
     pub buf_offset: i32,
     pub current: i32,
 }
 
-impl Iterator for Events<'_> {
-    type Item = Event;
+impl Iterator for Samples<'_> {
+    type Item = Sample;
 
     fn next(&mut self) -> Option<Self::Item> {
         let from = self.buf_offset + (self.current * self.length);
         match read_bytes_file(&mut self.file, from as usize, self.length as usize) {
             Ok(data) => {
                 self.current += 1;
-                Some(Event { data })
+                Some(Sample { data })
             }
             Err(_) => None,
         }
     }
 }
 
-impl Event {
-    pub fn get_by_header(&self, var: &VarHeader) -> Option<EventValue> {
+impl Sample {
+    pub fn get_by_header(&self, var: &VarHeader) -> Option<SampleValue> {
         let offset = var.offset as usize;
         match var.r#type {
             0 => {
                 let size = 1;
-                Some(EventValue::Char(self.data[offset + size] as char))
+                Some(SampleValue::Char(self.data[offset + size] as char))
             }
             1 => {
                 let size = 1;
-                Some(EventValue::Bool(self.data[offset + size] != 0))
+                Some(SampleValue::Bool(self.data[offset + size] != 0))
             }
             2 => {
                 let size = 4;
                 let value =
                     i32::from_le_bytes(self.data[offset..(offset + size)].try_into().unwrap());
-                Some(EventValue::Int(value))
+                Some(SampleValue::Int(value))
             }
             3 => {
                 let size = 4;
                 let value =
                     u32::from_le_bytes(self.data[offset..(offset + size)].try_into().unwrap());
-                Some(EventValue::BitField(value))
+                Some(SampleValue::BitField(value))
             }
             4 => {
                 let size = 4;
                 let value =
                     f32::from_le_bytes(self.data[offset..(offset + size)].try_into().unwrap());
-                Some(EventValue::Float32(value))
+                Some(SampleValue::Float32(value))
             }
             5 => {
                 let size = 8;
                 let value =
                     f64::from_le_bytes(self.data[offset..(offset + size)].try_into().unwrap());
-                Some(EventValue::Float64(value))
+                Some(SampleValue::Float64(value))
             }
             _ => unimplemented!(),
         }

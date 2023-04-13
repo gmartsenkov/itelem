@@ -1,11 +1,11 @@
 pub mod constants;
-mod events;
+mod samples;
 mod headers;
 mod session_info;
 
 use std::io::{Read, Seek, SeekFrom};
 
-use events::Events;
+use samples::Samples;
 use headers::{DiskHeader, Header, VarHeader, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE};
 use session_info::SessionInfo;
 
@@ -55,8 +55,8 @@ impl IbtReader {
         }
     }
 
-    pub fn events(&mut self) -> Events {
-        Events {
+    pub fn samples(&mut self) -> Samples {
+        Samples {
             current: 0,
             buf_offset: self.header.buf_offset,
             length: self.header.buf_len,
@@ -90,7 +90,7 @@ fn read_bytes_file(file: &mut dyn ReadSeek, from: usize, size: usize) -> Result<
 #[cfg(test)]
 mod tests {
     use crate::constants::Flags;
-    use crate::events::{Event, EventValue};
+    use crate::samples::{Sample, SampleValue};
     use std::fs::File;
 
     use super::*;
@@ -144,12 +144,12 @@ mod tests {
             println!("{}, {}", i, e.name.clone());
         });
 
-        let events: Vec<Event> = reader.events().collect();
-        assert_eq!(events.len(), 3371);
-        let first_event = events[1001].get_by_header(&rpm).unwrap();
-        assert_eq!(first_event, EventValue::Float32(991.8974));
-        let second_event = events[1001].get_by_header(&flags).unwrap();
-        assert_eq!(second_event, EventValue::BitField(268698112));
-        assert_eq!(second_event.bitfield() & Flags::Checkered as u32, 0);
+        let samples: Vec<Sample> = reader.samples().collect();
+        assert_eq!(samples.len(), 3371);
+        let first_sample = samples[1001].get_by_header(&rpm).unwrap();
+        assert_eq!(first_sample, SampleValue::Float32(991.8974));
+        let second_sample = samples[1001].get_by_header(&flags).unwrap();
+        assert_eq!(second_sample, SampleValue::BitField(268698112));
+        assert_eq!(second_sample.bitfield() & Flags::Checkered as u32, 0);
     }
 }

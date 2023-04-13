@@ -1,5 +1,6 @@
 [package]
 name = "itelem"
+description = "Parsing of iRacing .ibt telemetry file"
 version = "0.1.0"
 edition = "2021"
 
