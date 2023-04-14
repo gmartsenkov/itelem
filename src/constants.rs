@@ -1,3 +1,4 @@
+#[repr(usize)]
 #[derive(Debug)]
 pub enum Flags {
     Checkered = 0x00000001,
