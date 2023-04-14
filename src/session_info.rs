@@ -106,7 +106,7 @@ pub struct SessionInfo {
 #[derive(Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Sessions {
-    pub sessions: Vec<Session>
+    pub sessions: Vec<Session>,
 }
 
 #[derive(Deserialize)]
@@ -129,7 +129,7 @@ pub struct Session {
     pub results_num_caution_laps: i32,
     pub results_num_lead_changes: i32,
     pub results_laps_complete: i32,
-    pub results_official: i32
+    pub results_official: i32,
 }
 
 #[derive(Deserialize)]
@@ -138,5 +138,5 @@ pub struct FastestLap {
     #[serde(rename = "CarIdx")]
     pub car_idx: i32,
     pub fastes_lap: Option<i32>,
-    pub fastest_time: f32
+    pub fastest_time: f32,
 }
