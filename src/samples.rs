@@ -13,7 +13,7 @@ pub enum SampleValue {
 impl SampleValue {
     pub fn char(&self) -> char {
         if let SampleValue::Char(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
@@ -21,7 +21,7 @@ impl SampleValue {
 
     pub fn bool(&self) -> bool {
         if let SampleValue::Bool(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
@@ -29,7 +29,7 @@ impl SampleValue {
 
     pub fn float_32(&self) -> f32 {
         if let SampleValue::Float32(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
@@ -37,7 +37,7 @@ impl SampleValue {
 
     pub fn float_64(&self) -> f64 {
         if let SampleValue::Float64(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
@@ -45,7 +45,7 @@ impl SampleValue {
 
     pub fn int(&self) -> i32 {
         if let SampleValue::Int(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
@@ -53,7 +53,7 @@ impl SampleValue {
 
     pub fn bitfield(&self) -> u32 {
         if let SampleValue::BitField(x) = self {
-            x.clone()
+            *x
         } else {
             panic!()
         }
