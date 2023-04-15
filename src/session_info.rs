@@ -101,6 +101,28 @@ pub struct WeekendOptions {
 pub struct SessionInfo {
     pub weekend_info: WeekendInfo,
     pub session_info: Sessions,
+    pub camera_info: CameraInfo,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CameraInfo {
+    pub groups: Vec<CameraGroup>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CameraGroup {
+    pub group_num: i32,
+    pub group_name: String,
+    pub cameras: Vec<Camera>
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Camera {
+    pub camera_num: i32,
+    pub camera_name: String,
 }
 
 #[derive(Deserialize)]

@@ -92,7 +92,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn test_parsing_file() {
         let file = File::open("./test/fixtures/amg.ibt").unwrap();
         let mut reader = IbtReader::new(Box::new(file));
         assert_eq!(reader.header.version, 2);
@@ -116,6 +116,15 @@ mod tests {
         let weekend_info = &reader.session_info.weekend_info;
         assert_eq!(weekend_info.track_name, "spielberg gp");
         assert_eq!(weekend_info.weekend_options.qualify_scoring, "best lap");
+
+        let camera_info = &reader.session_info.camera_info;
+        assert_eq!(camera_info.groups.len(), 22);
+        assert_eq!(camera_info.groups[0].group_num, 1);
+        assert_eq!(camera_info.groups[0].group_name, "Nose");
+        let cameras = &camera_info.groups[0].cameras;
+        assert_eq!(cameras.len(), 1);
+        assert_eq!(cameras[0].camera_num, 1);
+        assert_eq!(cameras[0].camera_name, "CamNose");
 
         let session_info = &reader.session_info.session_info;
         assert_eq!(session_info.sessions.len(), 1);
@@ -154,5 +163,16 @@ mod tests {
         let second_sample = samples[1001].get_by_header(&flags).unwrap();
         assert_eq!(second_sample, SampleValue::BitField(268698112));
         assert_eq!(second_sample.bitfield() & Flags::Checkered as u32, 0);
+    }
+
+    #[test]
+    fn test_parsing_another_file() {
+        let file = File::open("./test/fixtures/amg_stint2.ibt").unwrap();
+        let mut reader = IbtReader::new(Box::new(file));
+        assert_eq!(reader.header.version, 2);
+        assert_eq!(reader.header.tick_rate, 60);
+
+        let samples: Vec<Sample> = reader.samples().collect();
+        assert_eq!(samples.len(), 31918);
     }
 }
