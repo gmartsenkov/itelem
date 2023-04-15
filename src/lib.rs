@@ -65,10 +65,10 @@ impl IbtReader {
     }
 
     pub fn find_var(&self, name: String) -> Option<VarHeader> {
-        (&self.vars)
-            .into_iter()
+        self.vars
+            .iter()
             .find(|var| var.name == name)
-            .map(|x| x.clone())
+            .cloned()
     }
 }
 
@@ -78,8 +78,7 @@ fn get_var_header(file: &mut dyn ReadSeek, header: &Header) -> Vec<u8> {
 }
 
 fn read_bytes_file(file: &mut dyn ReadSeek, from: usize, size: usize) -> Result<Vec<u8>, ()> {
-    let mut buffer: Vec<u8> = Vec::with_capacity(size);
-    buffer.resize(size, 0);
+    let mut buffer: Vec<u8> = vec![0; size];
     file.seek(SeekFrom::Start(from as u64)).unwrap();
     match file.read_exact(&mut buffer).map_err(|_e| ()) {
         Ok(_) => Ok(buffer),
@@ -111,7 +110,7 @@ mod tests {
         assert_eq!(reader.header.buf_len, 1039);
         assert_eq!(reader.header.buf_offset, 52080);
 
-        assert_eq!(reader.disk_header.start_date, 1.401298464324817e-45);
+        assert_eq!(reader.disk_header.start_date, 1e-45);
         assert_eq!(reader.disk_header.start_time, 0_f64);
         assert_eq!(reader.disk_header.end_time, 1.105135407938237e-309);
         assert_eq!(reader.disk_header.record_count, 0);
