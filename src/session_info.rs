@@ -104,6 +104,20 @@ pub struct SessionInfo {
     pub camera_info: CameraInfo,
     pub radio_info: RadioInfo,
     pub driver_info: DriverInfo,
+    pub split_time_info: SplitTimeInfo,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SplitTimeInfo {
+    pub sectors: Vec<Sector>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Sector {
+    pub sector_num: i32,
+    pub sector_start_pct: f32,
 }
 
 #[derive(Deserialize)]

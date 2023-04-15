@@ -149,6 +149,12 @@ mod tests {
         assert_eq!(driver.user_name, "Georgi Martsenkov");
         assert_eq!(driver.car_sponsor_1, 0);
 
+        let split_time_info = &reader.session_info.split_time_info;
+        assert_eq!(split_time_info.sectors.len(), 3);
+        assert_eq!(split_time_info.sectors[0].sector_num, 0);
+        assert_eq!(split_time_info.sectors[1].sector_num, 1);
+        assert_eq!(split_time_info.sectors[1].sector_start_pct, 0.271918);
+
         let vars = &reader.vars;
         let first = &vars[0];
         assert_eq!(first.r#type, 5);
