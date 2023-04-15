@@ -48,15 +48,15 @@ impl From<Vec<u8>> for VarHeader {
             name: from_utf8(&data[16..48])
                 .unwrap()
                 .to_string()
-                .replace("\0", ""),
+                .replace('\0', ""),
             description: from_utf8(&data[48..112])
                 .unwrap()
                 .to_string()
-                .replace("\0", ""),
+                .replace('\0', ""),
             unit: from_utf8(&data[112..144])
                 .unwrap()
                 .to_string()
-                .replace("\0", ""),
+                .replace('\0', ""),
         }
     }
 }
