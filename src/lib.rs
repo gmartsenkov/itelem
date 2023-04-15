@@ -65,10 +65,7 @@ impl IbtReader {
     }
 
     pub fn find_var(&self, name: String) -> Option<VarHeader> {
-        self.vars
-            .iter()
-            .find(|var| var.name == name)
-            .cloned()
+        self.vars.iter().find(|var| var.name == name).cloned()
     }
 }
 
