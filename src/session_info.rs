@@ -103,6 +103,100 @@ pub struct SessionInfo {
     pub session_info: Sessions,
     pub camera_info: CameraInfo,
     pub radio_info: RadioInfo,
+    pub driver_info: DriverInfo,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct DriverInfo {
+    pub driver_car_idx: i32,
+    #[serde(rename = "DriverUserID")]
+    pub driver_user_id: i32,
+    pub pace_car_idx: i32,
+    pub driver_head_pos_x: f32,
+    pub driver_head_pos_y: f32,
+    pub driver_head_pos_z: f32,
+    pub driver_car_is_electric: i32,
+    #[serde(rename = "DriverCarIdleRPM")]
+    pub driver_car_idle_rpm: f32,
+    pub driver_car_red_line: f32,
+    pub driver_car_eng_cylinder_count: i32,
+    pub driver_car_fuel_kg_per_ltr: f32,
+    pub driver_car_fuel_max_ltr: f32,
+    pub driver_car_max_fuel_pct: f32,
+    pub driver_car_gear_num_forward: i32,
+    pub driver_car_gear_neutral: i32,
+    pub driver_car_gear_reverse: i32,
+    #[serde(rename = "DriverCarSLFirstRPM")]
+    pub driver_car_sl_first_rpm: f32,
+    #[serde(rename = "DriverCarSLShiftRPM")]
+    pub driver_car_sl_shift_rpm: f32,
+    #[serde(rename = "DriverCarSLLastRPM")]
+    pub driver_car_sl_last_rpm: f32,
+    #[serde(rename = "DriverCarSLBlinkRPM")]
+    pub driver_car_sl_blink_rpm: f32,
+    pub driver_car_version: String,
+    pub driver_pit_trk_pct: f32,
+    pub driver_car_est_lap_time: f32,
+    pub driver_setup_name: String,
+    pub driver_setup_is_modified: f32,
+    pub driver_setup_load_type_name: String,
+    pub driver_setup_passed_tech: i32,
+    pub driver_incident_count: i32,
+    pub drivers: Vec<Driver>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Driver {
+    pub car_idx: i32,
+    pub user_name: String,
+    pub abbrev_name: Option<String>,
+    pub initials: Option<String>,
+    #[serde(rename = "UserID")]
+    pub user_id: i32,
+    #[serde(rename = "TeamID")]
+    pub team_id: i32,
+    pub team_name: String,
+    pub car_number: String,
+    pub car_number_raw: i32,
+    pub car_path: String,
+    #[serde(rename = "CarClassID")]
+    pub car_class_id: i32,
+    #[serde(rename = "CarID")]
+    pub car_id: i32,
+    pub car_is_pace_car: i32,
+    #[serde(rename = "CarIsAI")]
+    pub car_is_ai: i32,
+    pub car_is_electric: i32,
+    pub car_screen_name: String,
+    pub car_screen_name_short: String,
+    pub car_class_short_name: Option<String>,
+    pub car_class_rel_speed: i32,
+    pub car_class_license_level: i32,
+    pub car_class_max_fuel_pct: String,
+    pub car_class_weight_penalty: String,
+    pub car_class_power_adjust: String,
+    pub car_class_dry_tire_set_limit: String,
+    pub car_class_color: i32,
+    pub car_class_est_lap_time: f32,
+    #[serde(rename = "IRating")]
+    pub i_rating: i32,
+    pub lic_level: i32,
+    pub lic_sub_level: i32,
+    pub lic_string: String,
+    pub lic_color: String,
+    pub is_spectator: i32,
+    pub car_design_str: String,
+    pub helmet_design_str: String,
+    pub suit_design_str: String,
+    pub car_number_design_str: String,
+    #[serde(rename = "CarSponsor_1")]
+    pub car_sponsor_1: i32,
+    #[serde(rename = "CarSponsor_2")]
+    pub car_sponsor_2: i32,
+    pub cur_driver_incident_count: i32,
+    pub team_incident_count: i32,
 }
 
 #[derive(Deserialize)]
@@ -120,7 +214,7 @@ pub struct Radio {
     pub num_frequencies: i32,
     pub tuned_to_frequency_num: i32,
     pub scanning_is_on: i32,
-    pub frequencies: Vec<RadioFrequency>
+    pub frequencies: Vec<RadioFrequency>,
 }
 
 #[derive(Deserialize)]

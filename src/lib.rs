@@ -141,6 +141,14 @@ mod tests {
         assert_eq!(first_session.results_fastest_lap.len(), 1);
         assert_eq!(first_session.results_fastest_lap[0].car_idx, 255);
 
+        let driver_info = &reader.session_info.driver_info;
+        assert_eq!(driver_info.driver_car_idx, 0);
+        assert_eq!(driver_info.driver_head_pos_x, -0.643);
+        assert_eq!(driver_info.drivers.len(), 1);
+        let driver = &driver_info.drivers[0];
+        assert_eq!(driver.user_name, "Georgi Martsenkov");
+        assert_eq!(driver.car_sponsor_1, 0);
+
         let vars = &reader.vars;
         let first = &vars[0];
         assert_eq!(first.r#type, 5);
