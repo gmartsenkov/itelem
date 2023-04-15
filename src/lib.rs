@@ -155,6 +155,14 @@ mod tests {
         assert_eq!(split_time_info.sectors[1].sector_num, 1);
         assert_eq!(split_time_info.sectors[1].sector_start_pct, 0.271918);
 
+        let car_setup = &reader.session_info.car_setup;
+        assert_eq!(
+            car_setup.tires.left_rear.tread_remaining,
+            "100%, 100%, 100%"
+        );
+        assert_eq!(car_setup.chassis.rear.arb_setting, 0);
+        assert_eq!(car_setup.chassis.in_car_dials.abs_setting, "3 (ABS)");
+
         let vars = &reader.vars;
         let first = &vars[0];
         assert_eq!(first.r#type, 5);

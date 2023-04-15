@@ -105,6 +105,131 @@ pub struct SessionInfo {
     pub radio_info: RadioInfo,
     pub driver_info: DriverInfo,
     pub split_time_info: SplitTimeInfo,
+    pub car_setup: CarSetup,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CarSetup {
+    pub tires: Tires,
+    pub chassis: Chassis,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Chassis {
+    pub front: ChassisFront,
+    pub left_front: ChassisLeftFront,
+    pub left_rear: ChassisLeftRear,
+    pub in_car_dials: InCarDials,
+    pub right_front: ChassisRightFront,
+    pub right_rear: ChassisRightRear,
+    pub rear: ChassisRear,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct InCarDials {
+    pub dash_display_page: String,
+    pub brake_pressure_bias: String,
+    pub brake_pads: String,
+    pub abs_setting: String,
+    pub tc_setting: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisRightFront {
+    pub corner_weight: String,
+    pub ride_height: String,
+    pub spring_rate: String,
+    pub spring_perch_offset: String,
+    pub bump_stiffness: String,
+    pub rebound_stiffness: String,
+    pub camber: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisRightRear {
+    pub corner_weight: String,
+    pub ride_height: String,
+    pub spring_perch_offset: String,
+    pub bump_stiffness: String,
+    pub rebound_stiffness: String,
+    pub camber: String,
+    pub toe_in: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisLeftFront {
+    pub corner_weight: String,
+    pub ride_height: String,
+    pub spring_rate: String,
+    pub spring_perch_offset: String,
+    pub bump_stiffness: String,
+    pub rebound_stiffness: String,
+    pub camber: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisLeftRear {
+    pub corner_weight: String,
+    pub ride_height: String,
+    pub spring_perch_offset: String,
+    pub bump_stiffness: String,
+    pub rebound_stiffness: String,
+    pub camber: String,
+    pub toe_in: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisFront {
+    pub arb_setting: i32,
+    pub toe_in: String,
+    pub cross_weight: String,
+    pub nose_weight: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ChassisRear {
+    pub fuel_level: String,
+    pub arb_setting: i32,
+    pub wing_setting: i32,
+    pub diff_clutches: i32,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Tires {
+    pub left_front: LeftTire,
+    pub left_rear: LeftTire,
+    pub right_front: RightTire,
+    pub right_rear: RightTire,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LeftTire {
+    pub starting_pressure: String,
+    pub last_hot_pressure: String,
+    #[serde(rename = "LastTempsOMI")]
+    pub last_temps_omi: String,
+    pub tread_remaining: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RightTire {
+    pub starting_pressure: String,
+    pub last_hot_pressure: String,
+    #[serde(rename = "LastTempsIMO")]
+    pub last_temps_imo: String,
+    pub tread_remaining: String,
 }
 
 #[derive(Deserialize)]
