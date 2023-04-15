@@ -102,6 +102,42 @@ pub struct SessionInfo {
     pub weekend_info: WeekendInfo,
     pub session_info: Sessions,
     pub camera_info: CameraInfo,
+    pub radio_info: RadioInfo,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RadioInfo {
+    pub selected_radio_num: i32,
+    pub radios: Vec<Radio>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Radio {
+    pub radio_num: i32,
+    pub hop_count: i32,
+    pub num_frequencies: i32,
+    pub tuned_to_frequency_num: i32,
+    pub scanning_is_on: i32,
+    pub frequencies: Vec<RadioFrequency>
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RadioFrequency {
+    pub frequency_num: i32,
+    pub frequency_name: String,
+    pub priority: i32,
+    pub car_idx: i32,
+    pub entry_idx: i32,
+    #[serde(rename = "ClubID")]
+    pub club_id: i32,
+    pub can_scan: i32,
+    pub can_squawk: i32,
+    pub muted: i32,
+    pub is_mutable: i32,
+    pub is_deletable: i32,
 }
 
 #[derive(Deserialize)]
@@ -115,7 +151,7 @@ pub struct CameraInfo {
 pub struct CameraGroup {
     pub group_num: i32,
     pub group_name: String,
-    pub cameras: Vec<Camera>
+    pub cameras: Vec<Camera>,
 }
 
 #[derive(Deserialize)]

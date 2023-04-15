@@ -126,6 +126,14 @@ mod tests {
         assert_eq!(cameras[0].camera_num, 1);
         assert_eq!(cameras[0].camera_name, "CamNose");
 
+        let radio_info = &reader.session_info.radio_info;
+        assert_eq!(radio_info.selected_radio_num, 0);
+        assert_eq!(radio_info.radios.len(), 1);
+        let radio_info = &radio_info.radios[0];
+        assert_eq!(radio_info.scanning_is_on, 1);
+        assert_eq!(radio_info.frequencies.len(), 7);
+        assert_eq!(radio_info.frequencies[0].car_idx, -1);
+
         let session_info = &reader.session_info.session_info;
         assert_eq!(session_info.sessions.len(), 1);
         let first_session = &session_info.sessions[0];
