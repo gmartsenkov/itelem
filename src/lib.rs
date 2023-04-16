@@ -35,7 +35,7 @@ impl IbtReader {
         )
         .unwrap();
         let session_info =
-            serde_yaml::from_str(std::str::from_utf8(&session_info_data).unwrap()).unwrap();
+            serde_yaml::from_str(&String::from_utf8_lossy(&session_info_data)).unwrap();
 
         let vars_data = get_var_header(&mut buffer, &header);
         let vars: Vec<VarHeader> = (0..header.num_vars)
@@ -181,10 +181,6 @@ mod tests {
         assert_eq!(fps.name, "FrameRate");
         let flags = reader.find_var("SessionFlags".to_string()).unwrap();
         assert_eq!(flags.name, "SessionFlags");
-
-        vars.iter().enumerate().for_each(|(i, e)| {
-            println!("{}, {}", i, e.name.clone());
-        });
 
         let samples: Vec<Sample> = reader.samples().collect();
         assert_eq!(samples.len(), 3371);
