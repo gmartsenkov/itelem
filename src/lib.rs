@@ -192,13 +192,56 @@ mod tests {
     }
 
     #[test]
-    fn test_parsing_another_file() {
-        let file = File::open("./test/fixtures/amg_stint2.ibt").unwrap();
-        let mut reader = IbtReader::new(Box::new(file));
-        assert_eq!(reader.header.version, 2);
-        assert_eq!(reader.header.tick_rate, 60);
+    fn test_parsing_ai_race() {
+        let file = File::open("./test/fixtures/ai_race/practice.ibt").unwrap();
+        let mut qualify = IbtReader::new(Box::new(file));
+        assert_eq!(qualify.header.version, 2);
+        assert_eq!(qualify.header.tick_rate, 60);
 
-        let samples: Vec<Sample> = reader.samples().collect();
-        assert_eq!(samples.len(), 31918);
+        assert_eq!(qualify.session_info.weekend_info.session_id, 0);
+        assert_eq!(qualify.session_info.session_info.sessions.len(), 2);
+        let samples: Vec<Sample> = qualify.samples().collect();
+        assert_eq!(samples.len(), 12756);
+
+        let file = File::open("./test/fixtures/ai_race/race.ibt").unwrap();
+        let mut race = IbtReader::new(Box::new(file));
+        assert_eq!(race.header.version, 2);
+        assert_eq!(race.header.tick_rate, 60);
+
+        assert_eq!(race.session_info.session_info.sessions.len(), 2);
+        assert_eq!(
+            race.session_info.session_info.sessions[0].session_name,
+            "QUALIFY"
+        );
+        assert_eq!(
+            race.session_info.session_info.sessions[1].session_name,
+            "RACE"
+        );
+        let drivers = &race.session_info.driver_info.drivers;
+        assert_eq!(drivers.len(), 21);
+        assert_eq!(drivers[0].user_name, "Georgi Martsenkov");
+        assert_eq!(drivers[0].user_id, 290307);
+        assert_eq!(drivers[1].user_name, "Kevin Bobbitt");
+
+        let samples: Vec<Sample> = race.samples().collect();
+        assert_eq!(samples.len(), 16263);
+    }
+
+    #[test]
+    fn test_parsing_race() {
+        let file = File::open("./test/fixtures/race/practice.ibt").unwrap();
+
+        let mut practice = IbtReader::new(Box::new(file));
+        assert_eq!(practice.header.version, 2);
+        assert_eq!(practice.header.tick_rate, 60);
+        let drivers = &practice.session_info.driver_info.drivers;
+        assert_eq!(drivers.len(), 29);
+        assert_eq!(drivers[0].user_name, "Pace Car");
+        assert_eq!(drivers[0].user_id, -1);
+        assert_eq!(drivers[4].user_name, "Georgi Martsenkov");
+        assert_eq!(drivers[4].user_id, 290307);
+
+        let samples: Vec<Sample> = practice.samples().collect();
+        assert_eq!(samples.len(), 4589);
     }
 }
