@@ -69,12 +69,12 @@ impl IbtReader {
     }
 }
 
-fn get_var_header(file: &mut dyn ReadSeek, header: &Header) -> Vec<u8> {
+fn get_var_header<T: Read + Seek>(file: &mut T, header: &Header) -> Vec<u8> {
     let buffer_size = header.num_vars as usize * VAR_HEADER_BYTES_SIZE;
     read_bytes_file(file, header.var_header_offset as usize, buffer_size).unwrap()
 }
 
-fn read_bytes_file(file: &mut dyn ReadSeek, from: usize, size: usize) -> Result<Vec<u8>, ()> {
+fn read_bytes_file<T: Read + Seek>(file: &mut T, from: usize, size: usize) -> Result<Vec<u8>, ()> {
     let mut buffer: Vec<u8> = vec![0; size];
     file.seek(SeekFrom::Start(from as u64)).unwrap();
     match file.read_exact(&mut buffer).map_err(|_e| ()) {
@@ -88,6 +88,7 @@ mod tests {
     use crate::constants::Flags;
     use crate::samples::{Sample, SampleValue};
     use std::fs::File;
+    use std::io::Cursor;
 
     use super::*;
 
@@ -240,6 +241,18 @@ mod tests {
         assert_eq!(drivers[0].user_id, -1);
         assert_eq!(drivers[4].user_name, "Georgi Martsenkov");
         assert_eq!(drivers[4].user_id, 290307);
+
+        let samples: Vec<Sample> = practice.samples().collect();
+        assert_eq!(samples.len(), 4589);
+    }
+
+    #[test]
+    fn test_live_telemetry() {
+        let file = std::fs::OpenOptions::new().read(true).write(true).create(true).open("./test/fixtures/race/practice.ibt").unwrap();
+        let map = unsafe { memmap2::MmapOptions::new().map_mut(&file) }.unwrap();
+        let cursor = Cursor::new(map);
+        let mut practice = IbtReader::new(Box::new(cursor));
+        assert_eq!(practice.header.version, 2);
 
         let samples: Vec<Sample> = practice.samples().collect();
         assert_eq!(samples.len(), 4589);
