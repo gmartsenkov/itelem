@@ -8,6 +8,7 @@ use std::io::{Read, Seek, SeekFrom};
 use headers::{DiskHeader, Header, VarHeader, DISK_HEADER_BYTES_SIZE, HEADER_BYTES_SIZE};
 use samples::Samples;
 use session_info::SessionInfo;
+use yore::code_pages::CP1252;
 
 use crate::headers::VAR_HEADER_BYTES_SIZE;
 
@@ -34,8 +35,7 @@ impl IbtReader {
             header.sesion_info_length as usize,
         )
         .unwrap();
-        let session_info =
-            serde_yaml::from_str(&String::from_utf8_lossy(&session_info_data)).unwrap();
+        let session_info = serde_yaml::from_str(&CP1252.decode(&session_info_data)).unwrap();
 
         let vars_data = get_var_header(&mut buffer, &header);
         let vars: Vec<VarHeader> = (0..header.num_vars)

@@ -1,4 +1,4 @@
-use std::str::from_utf8;
+use yore::code_pages::CP1252;
 
 pub const HEADER_BYTES_SIZE: usize = 112;
 pub const DISK_HEADER_BYTES_SIZE: usize = 32;
@@ -45,18 +45,9 @@ impl From<Vec<u8>> for VarHeader {
             count: i32::from_le_bytes(data[8..12].try_into().unwrap()),
             count_as_time: i8::from_le_bytes(data[12..13].try_into().unwrap()),
             // padding here, 16 byte align (3 bytes)
-            name: from_utf8(&data[16..48])
-                .unwrap()
-                .to_string()
-                .replace('\0', ""),
-            description: from_utf8(&data[48..112])
-                .unwrap()
-                .to_string()
-                .replace('\0', ""),
-            unit: from_utf8(&data[112..144])
-                .unwrap()
-                .to_string()
-                .replace('\0', ""),
+            name: CP1252.decode(&data[16..48]).to_string().replace('\0', ""),
+            description: CP1252.decode(&data[48..112]).to_string().replace('\0', ""),
+            unit: CP1252.decode(&data[112..144]).to_string().replace('\0', ""),
         }
     }
 }
